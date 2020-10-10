@@ -116,3 +116,82 @@ matrix = [[0,1,1,0],
 [0,0,1,1],
 [1,0,1,0]]
 print(check(matrix))
+
+5.)
+
+
+from google.colab import drive
+drive.mount('/content/drive/')
+
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+import pandas as pd
+import seaborn as sns
+import pickle
+import random
+
+t_data = pd.read_csv('/content/drive/My Drive/bobble/train.csv')
+v_data = pd.read_csv('/content/drive/My Drive/bobble/validation.csv')
+t_data['target']=[1 if x=='silent' or x=='noise'  else 0 for x in t_data['target']]
+v_data['target']=[1 if x=='silent' or x=='noise'  else 0 for x in v_data['target']]
+i_train=t_data.drop('target',1)
+d_train=t_data.target
+i_valid=v_data.drop('target',1)
+d_valid=v_data.target
+del i_train['filename']
+del i_valid['filename']
+
+import sklearn
+from sklearn import model_selection
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.metrics import confusion_matrix
+import warnings; warnings.simplefilter('ignore') 
+models = []
+models.append(('Logistic Regression', LogisticRegression()))
+
+models.append(('Decison Tree', DecisionTreeClassifier()))
+
+models.append(('SVM', SVC()))
+
+for name,model in models:
+    
+    
+    classifier = model
+    classifier.fit(i_train, d_train)
+
+    pred = classifier.predict(i_valid)
+
+    # Making the Confusion Matrix
+    from sklearn.metrics import confusion_matrix
+    cm = confusion_matrix(d_valid, pred)
+
+   
+  
+    from sklearn.model_selection import cross_val_score
+    accuracies = cross_val_score(estimator = classifier, X = i_train, y = d_train, cv = 10)
+    accuracies.mean()
+    accuracies.std()
+    
+    print()
+    print("For {0} The Performance result is: ".format(name))
+    print()
+
+    #the performance of the classification model
+    print("the Accuracy is: "+ str((cm[0,0]+cm[1,1])/(cm[0,0]+cm[0,1]+cm[1,0]+cm[1,1])))
+    recall = cm[1,1]/(cm[0,1]+cm[1,1])
+    print("Recall is : "+ str(recall))
+    print("False Positive rate: "+ str(cm[1,0]/(cm[0,0]+cm[1,0])))
+    precision = cm[1,1]/(cm[1,0]+cm[1,1])
+    print("Precision is: "+ str(precision))
+    print("F-measure is: "+ str(2*((precision*recall)/(precision+recall))))
+    from math import log
+    print("Entropy is: "+ str(-precision*log(precision)))
