@@ -38,6 +38,7 @@ Part B:Fill in the Blanks
 5. -1 to 256
 
 Part C:Long Questions
+
 1.) solution using Python
 import nltk
 from nltk.corpus import stopwords 
@@ -84,6 +85,7 @@ for j in f:
 
 
 3.)
+
 def check(matrix):
         iscol = False
         row = len(matrix)
